@@ -1,13 +1,18 @@
 package com.selfmotivatednitish.ekart.service.product;
 
+import com.selfmotivatednitish.ekart.dto.ImageDto;
+import com.selfmotivatednitish.ekart.dto.ProductDto;
 import com.selfmotivatednitish.ekart.exceptions.ResourceNotFoundException;
 import com.selfmotivatednitish.ekart.model.Category;
+import com.selfmotivatednitish.ekart.model.Image;
+import com.selfmotivatednitish.ekart.repository.ImageRepository;
 import com.selfmotivatednitish.ekart.repository.ProductRepository;
 import com.selfmotivatednitish.ekart.model.Product;
 import com.selfmotivatednitish.ekart.repository.CategoryRepository;
 import com.selfmotivatednitish.ekart.request.AddProductRequest;
 import com.selfmotivatednitish.ekart.request.ProductUpdateRequest;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,7 +22,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProductService implements IProductService {
     private final ProductRepository productRepository;
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
+    private final ImageRepository imageRepository;
+    private final ModelMapper modelMapper;
 
     @Override
     public Product addProduct(AddProductRequest request) {
@@ -114,5 +121,21 @@ public class ProductService implements IProductService {
     @Override
     public Long countProductsByBrandAndName(String brand, String name) {
         return productRepository.countByBrandAndName(brand, name);
+    }
+
+    @Override
+    public List<ProductDto> getCovertedProducts(List<Product> products) {
+        return products.stream().map(this::convertToDto).toList();
+    }
+
+    @Override
+    public ProductDto convertToDto(Product product) {
+        ProductDto productDto = modelMapper.map(product, ProductDto.class);
+        List<Image> images = imageRepository.findByProductId(product.getId());
+        List<ImageDto> imageDtos = images.stream()
+                .map(image -> modelMapper.map(image, ImageDto.class))
+                .toList();
+        productDto.setImages(imageDtos);
+        return productDto;
     }
 }

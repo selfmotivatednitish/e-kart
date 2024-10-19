@@ -34,7 +34,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class ImageController {
     private final IImageService imageService;
 
-    @PostMapping("/upload")
+    @PostMapping
     public ResponseEntity<ApiResponse> saveImages(@RequestParam List<MultipartFile> files, @RequestParam Long productId) {
         try {
             List<ImageDto> imageDtos = imageService.saveImage(files, productId);
@@ -45,7 +45,7 @@ public class ImageController {
         }
     }
 
-    @GetMapping("/image/download/{imageId}")
+    @GetMapping("/{imageId}")
     public ResponseEntity<Resource> downloadImage(@PathVariable Long imageId) throws SQLException {
         Image image = imageService.getImageById(imageId);
         ByteArrayResource resource = new ByteArrayResource(image.getImage().getBytes(1, (int) image.getImage().length()));
@@ -54,7 +54,7 @@ public class ImageController {
                 .body(resource);
     }
 
-    @PutMapping("/image/{imageId}/update")
+    @PutMapping("/{imageId}")
     public ResponseEntity<ApiResponse> updateImage(@RequestBody MultipartFile file, @PathVariable Long imageId) {
         try {
             Image image = imageService.getImageById(imageId);
@@ -68,7 +68,7 @@ public class ImageController {
         return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Update failed", INTERNAL_SERVER_ERROR));
     }
 
-    @DeleteMapping("/image/{imageId}/delete")
+    @DeleteMapping("/{imageId}")
     public ResponseEntity<ApiResponse> deleteImage(@PathVariable Long imageId) {
         try {
             Image image = imageService.getImageById(imageId);

@@ -1,5 +1,6 @@
 package com.selfmotivatednitish.ekart.service.product;
 
+import com.selfmotivatednitish.ekart.dto.ProductDto;
 import com.selfmotivatednitish.ekart.model.Product;
 import com.selfmotivatednitish.ekart.request.AddProductRequest;
 import com.selfmotivatednitish.ekart.request.ProductUpdateRequest;
@@ -28,4 +29,8 @@ public interface IProductService {
     List<Product> getProductsByBrandAndName(String brand, String name);
 
     Long countProductsByBrandAndName(String brand, String name);
+
+    List<ProductDto> getCovertedProducts(List<Product> products);
+
+    ProductDto convertToDto(Product product);
 }
